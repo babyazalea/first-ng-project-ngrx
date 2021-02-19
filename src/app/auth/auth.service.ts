@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
-import { Subject, throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { User } from './user.model';
@@ -18,7 +18,7 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  user = new Subject<User>();
+  user = new BehaviorSubject<User>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -45,7 +45,11 @@ export class AuthService {
     return this.http
       .post<AuthResponseData>(
         `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.API_KEY}`,
-        { email: email, password: password, returnSecureToken: true }
+        {
+          email: email,
+          password: password,
+          returnSecureToken: true,
+        }
       )
       .pipe(
         catchError(this.handleError),
@@ -78,10 +82,10 @@ export class AuthService {
     }
     switch (errorRes.error.error.message) {
       case 'EMAIL_EXISTS':
-        errorMessage = 'This email exists already!';
+        errorMessage = 'This email exists already';
         break;
       case 'EMAIL_NOT_FOUND':
-        errorMessage = 'This email not found.';
+        errorMessage = 'This email does not exist.';
         break;
       case 'INVALID_PASSWORD':
         errorMessage = 'This password is not correct.';
