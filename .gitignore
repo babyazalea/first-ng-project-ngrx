@@ -49,3 +49,13 @@ Thumbs.db
 
 environment.ts
 environment.prod.ts
+
+# github
+
+.github
+
+# firebase
+
+.firebase
+.firebaserc
+firebase.json
